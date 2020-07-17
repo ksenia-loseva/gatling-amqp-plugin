@@ -27,9 +27,10 @@ abstract class AmqpAction(
         attributes.message
                   .amqpProtocolMessage(session)
                   .map(_.mergeProperties(props + ("deliveryMode" -> components.protocol.deliveryMode)))}
-      around <- aroundPublish(requestName, session, message)
+      around <- {
+        logger.info("message: " + message.amqpProperties.getHeaders.get("correlation_id") + "\nprops: " + props.get("headers"))
+        aroundPublish(requestName, session, message)}
     } yield {
-
       logger.info("sendRequest: " + message.amqpProperties.getHeaders.get("correlation_id"))
       if (throttled) {
         throttler.throttle(

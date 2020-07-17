@@ -9,7 +9,11 @@ package object request {
   sealed trait AmqpExchange
 
   case class AmqpDirectExchange(name: Expression[String], routingKey: Expression[String], durable: Boolean = false)
-      extends AmqpExchange
+    extends AmqpExchange
+
+  case class AmqpTopicExchange(name: Expression[String], routingKey: Expression[String], durable: Boolean = false)
+    extends AmqpExchange
+
   case class AmqpQueueExchange(name: Expression[String], durable: Boolean = false) extends AmqpExchange
 
   sealed trait AmqpMessage {
@@ -20,6 +24,7 @@ package object request {
     override private[amqp] def amqpProtocolMessage(session: Session) =
       text(session).map(str => AmqpProtocolMessage(MessageProperties.MINIMAL_BASIC, str.getBytes()))
   }
+
   case class BytesAmqpMessage(bytes: Expression[Array[Byte]]) extends AmqpMessage {
     override private[amqp] def amqpProtocolMessage(session: Session) =
       bytes(session).map(AmqpProtocolMessage(MessageProperties.MINIMAL_BASIC, _))

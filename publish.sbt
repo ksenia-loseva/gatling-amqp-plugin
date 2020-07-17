@@ -1,14 +1,8 @@
 ThisBuild / organization := "ru.tinkoff"
 ThisBuild / scalaVersion := "2.12.8"
+ThisBuild / version      := "0.0.4-SNAPSHOT"
 
 ThisBuild / publishMavenStyle := true
-
-ThisBuild / publishTo := Some(
-  if (isSnapshot.value)
-    Opts.resolver.sonatypeSnapshots
-  else
-    Opts.resolver.sonatypeStaging
-)
 
 ThisBuild / scmInfo := Some(
   ScmInfo(

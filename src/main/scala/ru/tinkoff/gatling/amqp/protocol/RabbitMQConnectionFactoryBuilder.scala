@@ -1,13 +1,15 @@
 package ru.tinkoff.gatling.amqp.protocol
 
 import com.rabbitmq.client.ConnectionFactory
+import javax.net.ssl.SSLContext
 
 case class RabbitMQConnectionFactoryBuilder(
     host: Option[String] = None,
     port: Option[Int] = None,
     username: Option[String] = None,
     password: Option[String] = None,
-    virtualHost: Option[String] = None
+    virtualHost: Option[String] = None,
+    sslContext: Option[SSLContext] = None
 ) {
 
   def username(rabbitUsername: String): RabbitMQConnectionFactoryBuilder =
@@ -21,6 +23,9 @@ case class RabbitMQConnectionFactoryBuilder(
   def vhost(rabbitVHost: String): RabbitMQConnectionFactoryBuilder =
     this.copy(virtualHost = Some(rabbitVHost))
 
+  def sslContext(rabbitSslContext: SSLContext): RabbitMQConnectionFactoryBuilder =
+    this.copy(sslContext = Some(rabbitSslContext))
+
   def build: ConnectionFactory = {
     val cf = new ConnectionFactory()
 
@@ -29,6 +34,7 @@ case class RabbitMQConnectionFactoryBuilder(
     username.foreach(cf.setUsername)
     password.foreach(cf.setPassword)
     virtualHost.foreach(cf.setVirtualHost)
+    sslContext.foreach(cf.useSslProtocol)
 
     cf
 

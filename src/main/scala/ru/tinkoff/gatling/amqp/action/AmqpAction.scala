@@ -22,12 +22,15 @@ abstract class AmqpAction(
   override def sendRequest(requestName: String, session: Session): Validation[Unit] = {
     for {
       props <- resolveProperties(attributes.messageProperties, session)
-      message <- attributes.message
+      message <- {
+        logger.info("resolvedProps: " + props.get("headers"))
+        attributes.message
                   .amqpProtocolMessage(session)
-                  .map(_.mergeProperties(props + ("deliveryMode" -> components.protocol.deliveryMode)))
+                  .map(_.mergeProperties(props + ("deliveryMode" -> components.protocol.deliveryMode)))}
       around <- aroundPublish(requestName, session, message)
     } yield {
 
+      logger.info("sendRequest: " + message.amqpProperties.getHeaders.get("correlation_id"))
       if (throttled) {
         throttler.throttle(
           session.scenario,
@@ -45,6 +48,7 @@ abstract class AmqpAction(
   ): Validation[Map[String, Any]] =
     properties.foldLeft(Map.empty[String, Any].success) {
       case (resolvedProperties, (key, value)) =>
+        logger.info("resolveProp: " + key(session) + " " + value(session) + " " + resolvedProperties)
         for {
           key                <- key(session)
           value              <- value(session)

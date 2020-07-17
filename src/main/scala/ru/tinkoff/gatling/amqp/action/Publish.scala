@@ -27,9 +27,7 @@ class Publish(attributes: AmqpAttributes,
                                        message: AmqpProtocolMessage): Validation[Around] =
     Around(
       before = {
-        if (logger.underlying.isDebugEnabled) {
           logMessage(s"Message sent user=${session.userId} AMQPMessageID=${message.messageId}", message)
-        }
 
         val now = clock.nowMillis
 

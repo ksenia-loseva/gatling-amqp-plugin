@@ -38,9 +38,7 @@ class RequestReply(
       Around(
         before = {
 
-          if (logger.underlying.isDebugEnabled) {
             logMessage(s"Message sent matchId=$id", message)
-          }
           tracker.track(id, clock.nowMillis, replyTimeout, attributes.checks, session, next, requestName)
         },
         after = {}
